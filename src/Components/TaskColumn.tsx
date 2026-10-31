@@ -8,9 +8,10 @@ interface ColumnProps {
   tasks: Task[];
   onMove: (id: number, status: Status, beforeId?: number) => void;
   onEdit?: (task: Task) => void;
+  onDelete: (id: number) => void;
 }
 
-export const Column = ({ status, tasks, onMove, onEdit }: ColumnProps) => {
+export const Column = ({ status, tasks, onMove, onEdit, onDelete }: ColumnProps) => {
 
  function handleDrop(e: DragEvent<HTMLDivElement>) {
   e.preventDefault();
@@ -28,19 +29,12 @@ export const Column = ({ status, tasks, onMove, onEdit }: ColumnProps) => {
     <div
       onDragOver={(event) => {
         event.preventDefault();
-        // setIsDragOver(true);
       }}
-      // onDragLeave={(event) => {
-      //   const nextTarget = event.relatedTarget as Node | null;
 
-      //   if (!nextTarget || !event.currentTarget.contains(nextTarget)) {
-      //     setIsDragOver(false);
-      //   }
-      // }}
       onDrop={handleDrop}
       className={`overflow-hidden rounded-xl border border-slate-200 bg-slate-100/70 transition`}
     >
-      {/* Column Header */}
+
       <div className="flex items-center gap-3 border-b border-slate-200 px-5 py-4">
         <span
           className={`h-2.5 w-2.5 rounded-full ${
@@ -62,7 +56,7 @@ export const Column = ({ status, tasks, onMove, onEdit }: ColumnProps) => {
       {/* Task Cards */}
       <div className="flex min-h-40 flex-col gap-2.5 p-3">
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} onMove={onMove} onEdit={onEdit} />
+          <TaskCard key={task.id} task={task} onMove={onMove} onEdit={onEdit} onDelete={onDelete} />
         ))}
 
         {tasks.length === 0 && (

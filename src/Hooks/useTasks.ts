@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 import type { Task, Status } from "../Constants/types";
@@ -56,28 +55,19 @@ export const useTask = () => {
 
   const showToast = useToast();
 
-  // Move or reorder task
-  const handleMove = (
-    id: number,
-    status: Status,
-    beforeId?: number
-  ) => {
+  const handleMove = (id: number, status: Status, beforeId?: number) => {
     const taskExists = allTasks.some((task) => task.id === id);
 
     if (!taskExists || id === beforeId) return;
 
     try {
       setAllTasks((previousTasks) => {
-        const draggedTask = previousTasks.find(
-          (task) => task.id === id
-        );
+        const draggedTask = previousTasks.find((task) => task.id === id);
 
         if (!draggedTask) return previousTasks;
 
         // Remove task from its previous position.
-        const remainingTasks = previousTasks.filter(
-          (task) => task.id !== id
-        );
+        const remainingTasks = previousTasks.filter((task) => task.id !== id);
 
         // Update status and timestamp.
         const updatedTask: Task = {
@@ -93,7 +83,7 @@ export const useTask = () => {
 
         // Find target task.
         const targetIndex = remainingTasks.findIndex(
-          (task) => task.id === beforeId
+          (task) => task.id === beforeId,
         );
 
         if (targetIndex === -1) {
@@ -115,14 +105,48 @@ export const useTask = () => {
     }
   };
 
-  // Edit task
-  const handleEdit = (task: Task) => {
-    console.log("Edit task:", task);
+  const handleEdit = (updatedTask: Task) => {
+    setAllTasks((previousTasks) =>
+      previousTasks.map((task) =>
+        task.id === updatedTask.id
+          ? {
+              ...updatedTask,
+              updatedAt: new Date().toISOString(),
+            }
+          : task,
+      ),
+    );
+
+    showToast("Task updated successfully", "success");
+  };
+
+  const handleAdd = (task: Task) => {
+    const newTask: Task = {
+      ...task,
+      id: Date.now(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setAllTasks((previousTasks) => [...previousTasks, newTask]);
+
+    showToast("Task added successfully", "success");
+  };
+
+  const handleDelete = (id: number) => {
+    console.log("Deleting task with ID:", id); // Debugging log
+    setAllTasks((previousTasks) =>
+      previousTasks.filter((task) => task.id !== id),
+    );
+
+    showToast("Task deleted successfully", "success");
   };
 
   return {
     allTasks,
     handleMove,
     handleEdit,
+    handleAdd,
+    handleDelete,
   };
 };
