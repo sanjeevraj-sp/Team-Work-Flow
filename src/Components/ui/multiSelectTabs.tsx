@@ -36,7 +36,7 @@ const MultiSelectTabs = ({
               key={option}
               type="button"
               onClick={() => toggleOption(option)}
-              className={`whitespace-nowrap rounded-md border px-2.5 py-2 text-xs font-medium transition ${
+              className={`whitespace-nowrap rounded-md border px-2.5 py-2 text-xs font-medium transition cursor-pointer ${
                 isSelected
                   ? "border-indigo-500 bg-indigo-50 text-indigo-700"
                   : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"

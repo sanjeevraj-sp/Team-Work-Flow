@@ -1,12 +1,13 @@
 import type { HTMLAttributes } from 'react'
 import { cn } from '../../Utils/cn'
 
-export type AlertVariant = 'success' | 'error' | 'info'
+export type AlertVariant = 'success' | 'error' | 'info' | 'warn'
 
 const variants: Record<AlertVariant, string> = {
   success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
   error: 'border-red-200 bg-red-50 text-red-800',
   info: 'border-indigo-200 bg-indigo-50 text-indigo-800',
+  warn: 'border-yellow-200 bg-yellow-50 text-yellow-800'
 }
 
 interface AlertProps extends HTMLAttributes<HTMLDivElement> {

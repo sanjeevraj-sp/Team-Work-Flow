@@ -1,16 +1,15 @@
-
 import { useEffect, useState, type FormEvent } from "react";
 
 import type { Task, Status, Priority } from "../Constants/types";
 import { useTaskContext } from "../Context/Task";
-
+import { useToast } from "../Context/Toast";
 interface FormData {
   title: string;
   description: string;
   assignee: string;
   status: Status;
   priority: Priority;
-  tags: string;
+  tags: string[];
   dueDate: string;
 }
 
@@ -30,7 +29,7 @@ const DEFAULT_FORM_DATA: FormData = {
   assignee: "",
   status: "Backlog",
   priority: "Medium",
-  tags: "",
+  tags: [],
   dueDate: "",
 };
 
@@ -45,12 +44,9 @@ const validateForm = (values: FormData): FormErrors => {
   return errors;
 };
 
-export const useTaskForm = ({
-  task,
-  isOpen,
-  onClose,
-}: UseTaskFormProps) => {
+export const useTaskForm = ({ task, isOpen, onClose }: UseTaskFormProps) => {
   const { handleAdd, handleEdit } = useTaskContext();
+  const showTost = useToast();
 
   const [formData, setFormData] = useState<FormData>(DEFAULT_FORM_DATA);
 
@@ -71,7 +67,7 @@ export const useTaskForm = ({
           assignee: task.assignee,
           status: task.status,
           priority: task.priority,
-          tags: task.tags.join(", "),
+          tags: [...(task.tags ?? [])],
           dueDate: task.dueDate ?? "",
         }
       : { ...DEFAULT_FORM_DATA };
@@ -83,8 +79,7 @@ export const useTaskForm = ({
   }, [task, isOpen]);
 
   // Check whether form values have changed.
-  const isDirty =
-    JSON.stringify(formData) !== JSON.stringify(initialValues);
+  const isDirty = JSON.stringify(formData) !== JSON.stringify(initialValues);
 
   // Validate current form values.
   const errors = validateForm(formData);
@@ -94,9 +89,9 @@ export const useTaskForm = ({
   const canSubmit = isDirty && isValid;
 
   // Update individual fields.
-  const handleChange = (
-    field: keyof FormData,
-    value: string
+  const handleChange = <K extends keyof FormData>(
+    field: K,
+    value: FormData[K],
   ) => {
     setFormData((previous) => ({
       ...previous,
@@ -119,13 +114,14 @@ export const useTaskForm = ({
 
   // Show validation messages only after interaction or submission.
   const getFieldError = (field: keyof FormData) => {
-    return touched[field] || isSubmitted
-      ? errors[field]
-      : undefined;
+    return touched[field] || isSubmitted ? errors[field] : undefined;
   };
 
   // Reset form and close modal.
   const handleClose = () => {
+    if (isDirty) {
+      showTost("The changes on task is cancelled!", "warn");
+    }
     setFormData(DEFAULT_FORM_DATA);
     setInitialValues(DEFAULT_FORM_DATA);
     setTouched({});
@@ -156,10 +152,7 @@ export const useTaskForm = ({
       status: formData.status,
       priority: formData.priority,
 
-      tags: formData.tags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean),
+      tags: formData.tags.map((tag) => tag.trim()).filter(Boolean),
 
       createdAt: task?.createdAt ?? now,
       updatedAt: now,
@@ -171,7 +164,7 @@ export const useTaskForm = ({
       completedAt:
         formData.status === "Done"
           ? task?.status === "Done"
-            ? task.completedAt ?? now
+            ? (task.completedAt ?? now)
             : now
           : null,
     };

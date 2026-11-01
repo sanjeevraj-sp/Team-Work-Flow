@@ -1,3 +1,4 @@
+import { ChevronsUpDown } from 'lucide-react';
 interface MultiSelectDropdownProps {
   label: string;
   placeholder?: string;
@@ -22,7 +23,7 @@ const MultiSelectDropdown = ({
   };
 
   return (
-    <div className="flex min-w-0 flex-col gap-1.5">
+    <div className="flex min-w-0 flex-col gap-1.5 cursor-pointer">
       <label className="text-xs font-medium text-slate-600 text-left">
         {label}
       </label>
@@ -35,12 +36,12 @@ const MultiSelectDropdown = ({
               : placeholder}
           </span>
 
-          <span className="ml-2 shrink-0 text-slate-400 transition-transform group-open:rotate-180">
-            ▼
+          <span className="ml-2 shrink-0 text-slate-400">
+            <ChevronsUpDown size={14}/>
           </span>
         </summary>
 
-        <div className="absolute left-0 top-full z-20 mt-1.5 max-h-48 w-full min-w-40 overflow-y-auto rounded-lg border border-slate-200 bg-white p-1.5 shadow-lg">
+        <div className="absolute left-0 top-full !z-999 mt-1.5 max-h-48 w-full min-w-40 overflow-y-auto rounded-lg border border-slate-200 bg-white p-1.5 shadow-lg">
           {options.map((option) => (
             <label
               key={option}

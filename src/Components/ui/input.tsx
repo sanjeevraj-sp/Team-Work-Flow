@@ -1,8 +1,11 @@
+import type { HTMLInputTypeAttribute } from "react";
 interface InputProps {
   label?: string;
   placeholder?: string;
   value: string;
   onChange: (value: string) => void;
+  type?: HTMLInputTypeAttribute;
+  onBlur?: () => void;
 }
 
 const Input = ({
@@ -10,6 +13,7 @@ const Input = ({
   placeholder,
   value,
   onChange,
+  type = "text",
 }: InputProps) => {
   return (
     <div className="flex flex-col gap-2">
@@ -20,7 +24,7 @@ const Input = ({
       )}
 
       <input
-        type="text"
+        type={type}
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}

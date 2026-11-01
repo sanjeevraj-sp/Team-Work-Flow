@@ -1,12 +1,13 @@
-
 import { useState, type DragEvent } from "react";
 
 import { useTaskContext } from "../Context/Task";
 
+import { useRelativeTime } from "../Utils/useRelativeTime";
+
 import Card from "./ui/card";
 import Modal from "./ui/model";
 
-import { Trash2 } from "lucide-react";
+import { Trash2, RotateCwClock } from "lucide-react";
 
 import type { Task } from "../Constants/types";
 
@@ -22,6 +23,7 @@ export const TaskCard = ({ task, onEdit }: TaskCardProps) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { handleMove, handleDelete } = useTaskContext();
+  const updatedTime = useRelativeTime(task.updatedAt);
 
   const priorityStyles = {
     Low: "bg-slate-100 text-slate-600 border-slate-200",
@@ -43,9 +45,7 @@ export const TaskCard = ({ task, onEdit }: TaskCardProps) => {
 
     setIsDragOver(false);
 
-    const draggedId = Number(
-      event.dataTransfer.getData(DRAG_DATA_TYPE)
-    );
+    const draggedId = Number(event.dataTransfer.getData(DRAG_DATA_TYPE));
 
     // Prevent invalid IDs and dropping onto itself.
     if (Number.isNaN(draggedId) || draggedId === task.id) return;
@@ -65,10 +65,7 @@ export const TaskCard = ({ task, onEdit }: TaskCardProps) => {
       <Card
         draggable
         onDragStart={(event) => {
-          event.dataTransfer.setData(
-            DRAG_DATA_TYPE,
-            String(task.id)
-          );
+          event.dataTransfer.setData(DRAG_DATA_TYPE, String(task.id));
 
           event.dataTransfer.effectAllowed = "move";
         }}
@@ -93,10 +90,10 @@ export const TaskCard = ({ task, onEdit }: TaskCardProps) => {
         }`}
         onClick={() => onEdit?.(task)}
       >
-        <div className="p-3">
+        <div className="flex flex-col gap-3 px-3 pt-3">
           {/* Title and Priority */}
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-sm font-semibold text-slate-900 text-left line-clamp-2">
+            <h3 className="line-clamp-2 text-left text-sm font-semibold text-slate-900">
               {task.title}
             </h3>
 
@@ -108,12 +105,12 @@ export const TaskCard = ({ task, onEdit }: TaskCardProps) => {
           </div>
 
           {/* Description */}
-          <p className="mt-2 py-1 text-left text-[13px] leading-5 text-slate-500">
+          <p className="text-left text-[13px] leading-5 text-slate-500">
             {task.description}
           </p>
 
           {/* Tags */}
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {task.tags.map((tag) => (
               <span
                 key={tag}
@@ -124,15 +121,26 @@ export const TaskCard = ({ task, onEdit }: TaskCardProps) => {
             ))}
           </div>
 
-          {/* Assignee and Delete */}
-          <div className="mt-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="grid size-6 place-items-center rounded-full bg-slate-200 text-[10px] font-medium text-slate-600">
-                {initials}
-              </div>
+          {/* Assignee */}
+          <div className="flex items-center gap-2">
+            <div className="grid size-6 place-items-center rounded-full bg-slate-200 text-[10px] font-medium text-slate-600">
+              {initials}
+            </div>
 
-              <span className="text-xs text-slate-500">
-                {task.assignee}
+            <span className="text-xs text-slate-500">{task.assignee}</span>
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between border-t border-slate-200 py-1">
+            <div className="flex items-center gap-1.5">
+              <RotateCwClock
+                size={16}
+                strokeWidth={2}
+                className="shrink-0 text-slate-400"
+              />
+
+              <span className="text-xs leading-none text-slate-400">
+                {updatedTime}
               </span>
             </div>
 
@@ -159,10 +167,7 @@ export const TaskCard = ({ task, onEdit }: TaskCardProps) => {
       >
         <p className="text-left text-sm text-slate-600">
           Are you sure you want to delete task{" "}
-          <span className="font-semibold text-slate-900">
-            "{task.title}"
-          </span>
-          ?
+          <span className="font-semibold text-slate-900">"{task.title}"</span>?
         </p>
 
         <div className="mt-6 flex justify-end gap-2">

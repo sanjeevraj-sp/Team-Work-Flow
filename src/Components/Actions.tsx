@@ -1,9 +1,14 @@
+import { useState } from "react";
+
 import Input from "./ui/input";
 import Select from "./ui/select";
+import { Button } from "./ui/button";
 import MultiSelectTabs from "./ui/multiSelectTabs";
 import MultiSelectDropdown from "./ui/multiSelectDropDown";
 
 import type { useTaskActions } from "../Hooks/useTaskActions";
+
+import { Copy, Check } from "lucide-react";
 
 const PRIORITIES = ["Low", "Medium", "High"];
 
@@ -28,6 +33,8 @@ interface ActionsProps {
 }
 
 const Actions = ({ actions }: ActionsProps) => {
+  const [isCopied, setIsCopied] = useState(false);
+
   const {
     search,
     setSearch,
@@ -44,6 +51,15 @@ const Actions = ({ actions }: ActionsProps) => {
     clearFilters,
     shareableUrl,
   } = actions;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareableUrl);
+      setIsCopied(true);
+    } catch (error) {
+      console.error("Failed to copy URL:", error);
+    }
+  };
 
   return (
     <div className="mx-auto max-w-7xl py-3">
@@ -103,26 +119,47 @@ const Actions = ({ actions }: ActionsProps) => {
           </div>
 
           <div className="lg:col-span-1">
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
               onClick={clearFilters}
-              className="w-full whitespace-nowrap rounded-lg border border-slate-300 bg-white px-2 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+              className="w-full whitespace-nowrap"
             >
               Clear
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Shareable URL Footer */}
         <div className="mt-4 border-t border-slate-200 pt-3">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
             <span className="shrink-0 text-xs font-medium text-slate-500">
               Shareable view URL
             </span>
 
-            <code className="min-w-0 break-all rounded-md bg-slate-50 px-2.5 py-2 text-xs text-slate-600">
-              {shareableUrl}
-            </code>
+            <div
+              className="flex min-w-0 flex-1 items-center justify-between gap-2 rounded-md bg-slate-50 px-2.5 py-2"
+              title={shareableUrl}
+            >
+              <code className="min-w-0 flex-1 truncate whitespace-nowrap text-xs text-slate-600 text-left">
+                {shareableUrl}
+              </code>
+
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="shrink-0 rounded-md p-1 text-slate-400 transition hover:bg-slate-200 hover:text-slate-700"
+                aria-label={isCopied ? "URL copied" : "Copy URL"}
+                title={isCopied ? "Copied!" : "Copy URL"}
+              >
+                {isCopied ? (
+                  <Check size={15} strokeWidth={2} className="text-blue-600" />
+                ) : (
+                  <Copy size={15} strokeWidth={1.7} />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
