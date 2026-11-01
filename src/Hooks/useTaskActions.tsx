@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { Priority } from "../Constants/types";
 import { PRIORITIES } from "../Constants/types";
-import { useTaskContext } from "../Context/Task";
+import { useTaskState } from "../Context/Task";
 
 type SortBy = "Updated date" | "Created date" | "Priority";
 type SortDirection = "Newest first" | "Oldest first";
@@ -66,7 +66,7 @@ const readFiltersFromUrl = (): TaskActionState => {
 };
 
 export const useTaskActions = () => {
-  const { allTasks } = useTaskContext();
+  const allTasks = useTaskState();
 
   const [filters, setFilters] = useState<TaskActionState>(readFiltersFromUrl);
 

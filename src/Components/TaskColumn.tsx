@@ -1,7 +1,7 @@
 import { type DragEvent } from "react";
 
 import type { Task, Status } from "../Constants/types";
-import { useTaskContext } from "../Context/Task";
+import { useTaskOperations } from "../Context/Task";
 
 import { TaskCard, DRAG_DATA_TYPE } from "./TaskCard";
 
@@ -12,7 +12,7 @@ interface ColumnProps {
 }
 
 export const Column = ({ status, tasks, onEdit }: ColumnProps) => {
-  const { handleMove } = useTaskContext();
+  const { handleMove } = useTaskOperations();
 
   // Drop task into the column (append at the end).
   function handleDrop(event: DragEvent<HTMLDivElement>) {

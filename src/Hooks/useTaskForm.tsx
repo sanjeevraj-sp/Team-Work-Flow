@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 
 import type { Task, Status, Priority } from "../Constants/types";
-import { useTaskContext } from "../Context/Task";
+import { useTaskOperations } from "../Context/Task";
 import { useToast } from "../Context/Toast";
 interface FormData {
   title: string;
@@ -45,7 +45,7 @@ const validateForm = (values: FormData): FormErrors => {
 };
 
 export const useTaskForm = ({ task, isOpen, onClose }: UseTaskFormProps) => {
-  const { handleAdd, handleEdit } = useTaskContext();
+  const { handleAdd, handleEdit } = useTaskOperations();
   const showTost = useToast();
 
   const [formData, setFormData] = useState<FormData>(DEFAULT_FORM_DATA);

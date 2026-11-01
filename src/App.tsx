@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 import Actions from "./Components/Actions";
 import Board from "./Components/TaskBoard";
@@ -26,10 +26,10 @@ function App() {
     setIsModalOpen(true);
   };
 
-  const handleEditClick = (task: Task) => {
+  const handleEditClick = useCallback((task: Task) => {
     setEditingTask(task);
     setIsModalOpen(true);
-  };
+  }, []);
 
   const handleClose = () => {
     setIsModalOpen(false);
@@ -38,7 +38,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
@@ -51,16 +50,11 @@ function App() {
             </h1>
           </div>
 
-          <Button
-            variant="primary"
-            size="md"
-            onClick={handleCreate}
-          >
+          <Button variant="primary" size="md" onClick={handleCreate}>
             + New Task
           </Button>
         </div>
       </header>
-
 
       <main>
         <div className="mx-auto w-full max-w-7xl px-6 py-6">
@@ -74,11 +68,7 @@ function App() {
         </div>
       </main>
 
-      <TaskForm
-        isOpen={isModalOpen}
-        task={editingTask}
-        onClose={handleClose}
-      />
+      <TaskForm isOpen={isModalOpen} task={editingTask} onClose={handleClose} />
     </div>
   );
 }

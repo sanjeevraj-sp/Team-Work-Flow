@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 
 import Input from "./ui/input";
 import Select from "./ui/select";
@@ -32,7 +32,7 @@ interface ActionsProps {
   actions: ReturnType<typeof useTaskActions>;
 }
 
-const Actions = ({ actions }: ActionsProps) => {
+const Actions = memo(({ actions }: ActionsProps) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const {
@@ -165,6 +165,6 @@ const Actions = ({ actions }: ActionsProps) => {
       </div>
     </div>
   );
-};
+});
 
 export default Actions;

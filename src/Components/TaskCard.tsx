@@ -1,6 +1,6 @@
-import { useState, type DragEvent } from "react";
+import { useState, memo, type DragEvent } from "react";
 
-import { useTaskContext } from "../Context/Task";
+import { useTaskOperations } from "../Context/Task";
 
 import { useRelativeTime } from "../Utils/useRelativeTime";
 
@@ -18,11 +18,11 @@ interface TaskCardProps {
   onEdit?: (task: Task) => void;
 }
 
-export const TaskCard = ({ task, onEdit }: TaskCardProps) => {
+export const TaskCard = memo(({ task, onEdit }: TaskCardProps) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const { handleMove, handleDelete } = useTaskContext();
+  const { handleMove, handleDelete } = useTaskOperations();
   const updatedTime = useRelativeTime(task.updatedAt);
 
   const priorityStyles = {
@@ -190,4 +190,4 @@ export const TaskCard = ({ task, onEdit }: TaskCardProps) => {
       </Modal>
     </>
   );
-};
+});
