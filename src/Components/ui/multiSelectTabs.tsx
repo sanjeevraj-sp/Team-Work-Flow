@@ -22,7 +22,7 @@ const MultiSelectTabs = ({
   return (
     <div className="flex flex-col gap-2">
       {label && (
-        <label className="text-sm font-medium text-slate-700 text-left">
+        <label className="text-xs font-medium text-slate-600 text-left">
           {label}
         </label>
       )}

@@ -1,29 +1,27 @@
+
 import { useState, type DragEvent } from "react";
+
+import { useTaskContext } from "../Context/Task";
 
 import Card from "./ui/card";
 import Modal from "./ui/model";
 
 import { Trash2 } from "lucide-react";
 
-import type { Task, Status } from "../Constants/types";
+import type { Task } from "../Constants/types";
 
 export const DRAG_DATA_TYPE = "text/plain";
 
 interface TaskCardProps {
   task: Task;
-  onMove: (id: number, status: Status, beforeId?: number) => void;
   onEdit?: (task: Task) => void;
-  onDelete: (id: number) => void;
 }
 
-export const TaskCard = ({ task, onMove, onEdit, onDelete }: TaskCardProps) => {
+export const TaskCard = ({ task, onEdit }: TaskCardProps) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const confirmDelete = () => {
-    onDelete(task.id);
-    setShowDeleteModal(false);
-  };
+  const { handleMove, handleDelete } = useTaskContext();
 
   const priorityStyles = {
     Low: "bg-slate-100 text-slate-600 border-slate-200",
@@ -38,35 +36,48 @@ export const TaskCard = ({ task, onMove, onEdit, onDelete }: TaskCardProps) => {
     .slice(0, 2)
     .toUpperCase();
 
+  // Handle dropping a task onto another task.
   function handleDrop(event: DragEvent<HTMLDivElement>) {
     event.preventDefault();
     event.stopPropagation();
 
     setIsDragOver(false);
 
-    // Set
-    event.dataTransfer.setData(DRAG_DATA_TYPE, String(task.id));
+    const draggedId = Number(
+      event.dataTransfer.getData(DRAG_DATA_TYPE)
+    );
 
-    // Get
-    const draggedId = Number(event.dataTransfer.getData(DRAG_DATA_TYPE));
-
-    // Prevent dropping a task onto itself.
-    if (!draggedId || draggedId === task.id) return;
+    // Prevent invalid IDs and dropping onto itself.
+    if (Number.isNaN(draggedId) || draggedId === task.id) return;
 
     // Insert before the hovered task.
-    onMove(draggedId, task.status, task.id);
+    handleMove(draggedId, task.status, task.id);
   }
+
+  // Confirm task deletion.
+  const confirmDelete = () => {
+    handleDelete(task.id);
+    setShowDeleteModal(false);
+  };
 
   return (
     <>
       <Card
         draggable
         onDragStart={(event) => {
-          event.dataTransfer.setData(DRAG_DATA_TYPE, String(task.id));
+          event.dataTransfer.setData(
+            DRAG_DATA_TYPE,
+            String(task.id)
+          );
+
+          event.dataTransfer.effectAllowed = "move";
         }}
         onDragEnd={() => setIsDragOver(false)}
         onDragOver={(event) => {
           event.preventDefault();
+          event.stopPropagation();
+
+          event.dataTransfer.dropEffect = "move";
           setIsDragOver(true);
         }}
         onDragLeave={(event) => {
@@ -77,15 +88,15 @@ export const TaskCard = ({ task, onMove, onEdit, onDelete }: TaskCardProps) => {
           }
         }}
         onDrop={handleDrop}
-        className={`cursor-grab ${
+        className={`cursor-grab !rounded-lg ${
           isDragOver ? "border-t-4 border-t-indigo-500" : ""
         }`}
-        onClick={() => onEdit && onEdit(task)}
+        onClick={() => onEdit?.(task)}
       >
         <div className="p-3">
           {/* Title and Priority */}
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-sm font-semibold text-slate-900">
+            <h3 className="text-sm font-semibold text-slate-900 text-left line-clamp-2">
               {task.title}
             </h3>
 
@@ -97,7 +108,7 @@ export const TaskCard = ({ task, onMove, onEdit, onDelete }: TaskCardProps) => {
           </div>
 
           {/* Description */}
-          <p className="mt-2 text-sm leading-5 text-slate-500 text-left py-1">
+          <p className="mt-2 py-1 text-left text-[13px] leading-5 text-slate-500">
             {task.description}
           </p>
 
@@ -113,14 +124,16 @@ export const TaskCard = ({ task, onMove, onEdit, onDelete }: TaskCardProps) => {
             ))}
           </div>
 
+          {/* Assignee and Delete */}
           <div className="mt-3 flex items-center justify-between">
-    
             <div className="flex items-center gap-2">
               <div className="grid size-6 place-items-center rounded-full bg-slate-200 text-[10px] font-medium text-slate-600">
                 {initials}
               </div>
 
-              <span className="text-xs text-slate-500">{task.assignee}</span>
+              <span className="text-xs text-slate-500">
+                {task.assignee}
+              </span>
             </div>
 
             <button
@@ -138,14 +151,18 @@ export const TaskCard = ({ task, onMove, onEdit, onDelete }: TaskCardProps) => {
         </div>
       </Card>
 
+      {/* Delete Confirmation Modal */}
       <Modal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         title="Delete Task"
       >
-        <p className="text-sm text-slate-600 text-left">
+        <p className="text-left text-sm text-slate-600">
           Are you sure you want to delete task{" "}
-          <span className="font-semibold text-slate-900">"{task.title}"</span>?
+          <span className="font-semibold text-slate-900">
+            "{task.title}"
+          </span>
+          ?
         </p>
 
         <div className="mt-6 flex justify-end gap-2">

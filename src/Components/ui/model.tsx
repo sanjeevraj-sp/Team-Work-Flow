@@ -29,8 +29,8 @@ const Modal = ({
       <div className="w-full max-w-lg rounded-xl bg-white shadow-xl">
 
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3">
+          <h2 className="text-md font-semibold text-slate-900">
             {title}
           </h2>
 
@@ -45,7 +45,7 @@ const Modal = ({
         </div>
 
         {/* Content */}
-        <div className="p-5">
+        <div className="p-5 overflow-y-auto max-h-[90vh]">
           {children}
         </div>
 

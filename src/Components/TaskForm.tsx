@@ -1,108 +1,37 @@
 
-import { useEffect, useState, type FormEvent } from "react";
-
 import type { Task, Status, Priority } from "../Constants/types";
-import Modal from "./ui/model";
 import { STATUSES, PRIORITIES } from "../Constants/types";
+
+import { useTaskForm } from "../Hooks/useTaskForm";
+
+import Modal from "./ui/model";
 import { Button } from "./ui/button";
 
 interface TaskFormProps {
   isOpen: boolean;
   task: Task | null;
-  setEditingTask?: (task: Task | null) => void;
   onClose: () => void;
-  onSubmit: (task: Task) => void;
 }
 
-interface FormData {
-  title: string;
-  description: string;
-  assignee: string;
-  status: Status;
-  priority: Priority;
-  tags: string;
-}
-
-const initialFormData: FormData = {
-  title: "",
-  description: "",
-  assignee: "",
-  status: "Backlog",
-  priority: "Medium",
-  tags: "",
-};
-
-const TaskForm = ({
-  isOpen,
-  task,
-  setEditingTask,
-  onClose,
-  onSubmit,
-}: TaskFormProps) => {
-  const [formData, setFormData] = useState<FormData>(initialFormData);
-
-  // Populate form when editing or reset when creating.
-  useEffect(() => {
-    if (task) {
-      setFormData({
-        title: task.title,
-        description: task.description,
-        assignee: task.assignee,
-        status: task.status,
-        priority: task.priority,
-        tags: task.tags.join(", "),
-      });
-    } else {
-      setFormData(initialFormData);
-    }
-  }, [task, isOpen]);
-
-  const handleChange = (
-    field: keyof FormData,
-    value: string
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!formData.title.trim()) return;
-
-    const now = new Date().toISOString();
-
-    const updatedTask: Task = {
-      id: task?.id ?? Date.now(),
-      title: formData.title.trim(),
-      description: formData.description.trim(),
-      assignee: formData.assignee.trim(),
-      status: formData.status,
-      priority: formData.priority,
-      tags: formData.tags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean),
-      createdAt: task?.createdAt ?? now,
-      updatedAt: now,
-    };
-
-    onSubmit(updatedTask);
-    onClose();
-  };
+const TaskForm = ({ isOpen, task, onClose }: TaskFormProps) => {
+  const {
+    formData,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    handleClose,
+    getFieldError,
+    canSubmit,
+  } = useTaskForm({
+    task,
+    isOpen,
+    onClose,
+  });
 
   return (
     <Modal
       isOpen={isOpen}
-      onClose={() => {
-        setFormData(initialFormData);
-        if (setEditingTask) {
-          setEditingTask(null);
-        }
-        onClose();
-      }}
+      onClose={handleClose}
       title={task ? "Edit Task" : "Create New Task"}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -118,9 +47,16 @@ const TaskForm = ({
             required
             value={formData.title}
             onChange={(e) => handleChange("title", e.target.value)}
+            onBlur={() => handleBlur("title")}
             placeholder="Enter task title"
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
           />
+
+          {getFieldError("title") && (
+            <p className="mt-1 text-xs text-red-500">
+              {getFieldError("title")}
+            </p>
+          )}
         </div>
 
         {/* Description */}
@@ -155,7 +91,6 @@ const TaskForm = ({
 
         {/* Status and Priority */}
         <div className="grid grid-cols-2 gap-3">
-
           <div>
             <label className="mb-1.5 block text-sm font-medium text-slate-700 text-left">
               Status
@@ -163,9 +98,7 @@ const TaskForm = ({
 
             <select
               value={formData.status}
-              onChange={(e) =>
-                handleChange("status", e.target.value)
-              }
+              onChange={(e) => handleChange("status", e.target.value as Status)}
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-indigo-500"
             >
               {STATUSES.map((status) => (
@@ -184,7 +117,7 @@ const TaskForm = ({
             <select
               value={formData.priority}
               onChange={(e) =>
-                handleChange("priority", e.target.value)
+                handleChange("priority", e.target.value as Priority)
               }
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-indigo-500"
             >
@@ -195,7 +128,20 @@ const TaskForm = ({
               ))}
             </select>
           </div>
+        </div>
 
+        {/* Due Date */}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 text-left">
+            Due Date
+          </label>
+
+          <input
+            type="date"
+            value={formData.dueDate}
+            onChange={(e) => handleChange("dueDate", e.target.value)}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+          />
         </div>
 
         {/* Tags */}
@@ -222,22 +168,19 @@ const TaskForm = ({
           <Button
             type="button"
             variant="secondary"
-            onClick={() => {
-                setFormData(initialFormData);
-                if (setEditingTask) {
-                  setEditingTask(null);
-                }
-                onClose();
-            }}
+            onClick={handleClose}
           >
             Cancel
           </Button>
 
-          <Button type="submit" variant="primary">
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={!canSubmit}
+          >
             {task ? "Save Changes" : "Create Task"}
           </Button>
         </div>
-
       </form>
     </Modal>
   );

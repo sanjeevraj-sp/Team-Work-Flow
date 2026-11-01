@@ -1,18 +1,13 @@
-import { useState } from "react";
-
 import Input from "./ui/input";
 import Select from "./ui/select";
 import MultiSelectTabs from "./ui/multiSelectTabs";
 import MultiSelectDropdown from "./ui/multiSelectDropDown";
 
+import type { useTaskActions } from "../Hooks/useTaskActions";
+
 const PRIORITIES = ["Low", "Medium", "High"];
 
-const ASSIGNEES = [
-  "John Doe",
-  "Peter Parker",
-  "Bruce Wayne",
-  "Donald Trump",
-];
+const ASSIGNEES = ["John Doe", "Peter Parker", "Bruce Wayne", "Donald Trump"];
 
 const BADGES = [
   "Frontend",
@@ -24,42 +19,36 @@ const BADGES = [
   "Tasks",
 ];
 
-const SORT_OPTIONS = [
-  "Updated date",
-  "Created date",
-  "Priority",
-];
+const SORT_OPTIONS = ["Updated date", "Created date", "Priority"];
 
-const SORT_DIRECTIONS = [
-  "Newest first",
-  "Oldest first",
-];
+const SORT_DIRECTIONS = ["Newest first", "Oldest first"];
 
-const Actions = () => {
-  const [search, setSearch] = useState("");
-  const [priorities, setPriorities] = useState<string[]>([]);
-  const [assignees, setAssignees] = useState<string[]>([]);
-  const [badges, setBadges] = useState<string[]>([]);
+interface ActionsProps {
+  actions: ReturnType<typeof useTaskActions>;
+}
 
-  const [sortBy, setSortBy] = useState("Updated date");
-  const [sortDirection, setSortDirection] = useState("Newest first");
-
-  const clearFilters = () => {
-    setSearch("");
-    setPriorities([]);
-    setAssignees([]);
-    setBadges([]);
-    setSortBy("Updated date");
-    setSortDirection("Newest first");
-  };
+const Actions = ({ actions }: ActionsProps) => {
+  const {
+    search,
+    setSearch,
+    priorities,
+    setPriorities,
+    assignees,
+    setAssignees,
+    badges,
+    setBadges,
+    sortBy,
+    setSortBy,
+    sortDirection,
+    setSortDirection,
+    clearFilters,
+    shareableUrl,
+  } = actions;
 
   return (
     <div className="mx-auto max-w-7xl py-3">
       <div className="rounded-xl border border-slate-200 bg-white p-4">
-
         <div className="grid grid-cols-1 items-end gap-3 lg:grid-cols-12">
-
-          {/* Search */}
           <div className="lg:col-span-3">
             <Input
               label="Search"
@@ -69,7 +58,6 @@ const Actions = () => {
             />
           </div>
 
-          {/* Priority */}
           <div className="lg:col-span-2">
             <MultiSelectTabs
               label="Priority"
@@ -79,7 +67,6 @@ const Actions = () => {
             />
           </div>
 
-          {/* Assignee */}
           <div className="lg:col-span-2">
             <MultiSelectDropdown
               label="Assignee"
@@ -90,7 +77,6 @@ const Actions = () => {
             />
           </div>
 
-          {/* Badge */}
           <div className="lg:col-span-2">
             <MultiSelectDropdown
               label="Badge"
@@ -101,7 +87,6 @@ const Actions = () => {
             />
           </div>
 
-          {/* Sort */}
           <div className="flex flex-col gap-1.5 lg:col-span-2">
             <Select
               label="Sort by"
@@ -117,7 +102,6 @@ const Actions = () => {
             />
           </div>
 
-          {/* Clear */}
           <div className="lg:col-span-1">
             <button
               type="button"
@@ -127,7 +111,19 @@ const Actions = () => {
               Clear
             </button>
           </div>
+        </div>
 
+        {/* Shareable URL Footer */}
+        <div className="mt-4 border-t border-slate-200 pt-3">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <span className="shrink-0 text-xs font-medium text-slate-500">
+              Shareable view URL
+            </span>
+
+            <code className="min-w-0 break-all rounded-md bg-slate-50 px-2.5 py-2 text-xs text-slate-600">
+              {shareableUrl}
+            </code>
+          </div>
         </div>
       </div>
     </div>

@@ -4,15 +4,11 @@ import { Column } from "./TaskColumn";
 interface BoardProps {
   tasks: Task[];
   statuses: readonly Status[];
-  onMove: (id: number, status: Status, beforeId?: number) => void;
   onEdit: (task: Task) => void;
-  onDelete: (id: number) => void;
 }
 
-const Board = ({ tasks, statuses, onMove, onEdit, onDelete }: BoardProps) => {
+const Board = ({ tasks, statuses, onEdit }: BoardProps) => {
   return (
-    //  <div className="mx-auto w-full max-w-7xl px-6 py-6">
-
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         {statuses.map((status) => (
           <Column
@@ -20,13 +16,9 @@ const Board = ({ tasks, statuses, onMove, onEdit, onDelete }: BoardProps) => {
             status={status}
             tasks={tasks.filter((task) => task.status === status)}
             onEdit={onEdit}
-            onMove={onMove}
-            onDelete={onDelete}
           />
         ))}
       </div>
-
-    // </div>
   );
 };
 
