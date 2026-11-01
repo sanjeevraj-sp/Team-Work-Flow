@@ -1,54 +1,45 @@
-# React + TypeScript + Vite
+# Team Workflow Board
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript task board with task management, drag-and-drop, filtering, sorting, URL-based views, and browser persistence.
 
-Currently, two official plugins are available:
+## Live demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Deployed application:** https://team-work-flow-b7r1k1bi1-sanjeev1420s-projects.vercel.app/
 
-## Expanding the ESLint configuration
+## Run locally
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Run tests
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm run test        # Run tests once
+npm run test:watch  # Run tests in watch mode
 ```
+
+Current tests cover:
+- Creating a task and verifying it appears on the board.
+- Filtering tasks by priority and checking the resulting tasks and URL.
+
+## Architecture
+- [Architecture and technical notes](./docs/architecture.md)
+
+## Performance work
+- [Performance profiling and optimizations](./docs/performance.md)
+
+## Walkthrough recording
+
+**3–5 minute screen recording:** _Add the recording link here._
+
+## AI Assistance
+
+AI assistance was used primarily in three areas:
+
+- **UI Development:** Translating my own UI design ideas, styling preferences, and layout decisions into React components and Tailwind CSS code.
+- **Testing:** Guidance on configuring Vitest and React Testing Library, understanding testing concepts, and implementing integration test examples.
+- **Performance Optimization:** Analyzing React Profiler results, identifying potential unnecessary re-renders, and exploring optimization techniques.
+
+AI suggestions were reviewed, adapted, and tested within the existing project. I focused on understanding the implementation, underlying concepts, and trade-offs so I can explain and maintain the code independently.
