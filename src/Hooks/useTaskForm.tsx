@@ -120,14 +120,18 @@ export const useTaskForm = ({ task, isOpen, onClose }: UseTaskFormProps) => {
   // Reset form and close modal.
   const handleClose = () => {
     if (isDirty) {
-      showTost("The changes on task is cancelled!", "warn");
+      showTost("Task changes discarded!", "warn");
     }
-    setFormData(DEFAULT_FORM_DATA);
-    setInitialValues(DEFAULT_FORM_DATA);
+
+    resetForm();
+    onClose();
+  };
+
+  const resetForm = () => {
+    setFormData({ ...DEFAULT_FORM_DATA, tags: [] });
+    setInitialValues({ ...DEFAULT_FORM_DATA, tags: [] });
     setTouched({});
     setIsSubmitted(false);
-
-    onClose();
   };
 
   // Add or update task.
@@ -175,7 +179,9 @@ export const useTaskForm = ({ task, isOpen, onClose }: UseTaskFormProps) => {
       handleAdd(updatedTask);
     }
 
-    handleClose();
+    // Successful submission: reset and close without cancellation toast.
+    resetForm();
+    onClose();
   };
 
   return {
