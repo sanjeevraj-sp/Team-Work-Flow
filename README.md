@@ -32,7 +32,7 @@ Current tests cover:
 
 ## Walkthrough recording
 
-**3–5 minute screen recording:** _Add the recording link here._
+**3–5 minute screen recording:** <video controls src="https://res.cloudinary.com/dqn1j6ibx/video/upload/v1793602163/EverQuint_dm7rak.mp4" title="_Add the recording link here._"></video>
 
 ## AI Assistance
 
